@@ -7,7 +7,7 @@ import os
 
 # ─── PAGE CONFIG ─────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="FetusVision AI — Ritesh Trivedi",
+    page_title="Fetus_Detection AI — Ritesh Trivedi",
     page_icon="🩺",
     layout="wide",
     initial_sidebar_state="collapsed"
