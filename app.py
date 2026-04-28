@@ -17,26 +17,43 @@ st.set_page_config(
 @st.cache_resource
 def load_model():
     try:
-        import urllib.request
+        import requests
         from ultralytics import YOLO
-
-        # Hugging Face se direct best.pt download
-        HF_URL = "https://huggingface.co/ritesht04/Fetus_Detection/resolve/main/best.pt"
-
-        # Agar best.pt nahi hai to download karo
-        if not os.path.exists("best.pt"):
-            with st.spinner("Model download ho raha hai... pehli baar thoda time lagega"):
-                urllib.request.urlretrieve(HF_URL, "best.pt")
-
-        # PIL only mode - cv2/libGL nahi chahiye
         import os
-        os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "0"
-        model = YOLO("best.pt")
+
+        HF_URL = "https://huggingface.co/ritesht04/Fetus_Detection/resolve/main/best.pt"
+        MODEL_PATH = "best.pt"
+
+        # 🔽 DOWNLOAD FUNCTION
+        def download_model(url, path):
+            try:
+                r = requests.get(url, stream=True, timeout=120)
+                if r.status_code == 200:
+                    with open(path, "wb") as f:
+                        for chunk in r.iter_content(8192):
+                            f.write(chunk)
+                    return True
+                else:
+                    return False
+            except:
+                return False
+
+        # 🔽 CHECK + DOWNLOAD
+        if not os.path.exists(MODEL_PATH):
+            with st.spinner("Model download ho raha hai..."):
+                success = download_model(HF_URL, MODEL_PATH)
+
+            if not success:
+                st.error("❌ Model download fail ho gaya")
+                return None, False
+
+        # 🔽 LOAD MODEL
+        model = YOLO(MODEL_PATH)
         return model, True
+
     except Exception as e:
         st.error(f"Model load error: {e}")
         return None, False
-
 model, model_loaded = load_model()
 
 # ─── CSS STYLING ─────────────────────────────────────────────────────────────
