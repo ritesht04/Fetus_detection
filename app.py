@@ -2,7 +2,6 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import io
-import base64
 import time
 import os
 
@@ -29,6 +28,9 @@ def load_model():
             with st.spinner("Model download ho raha hai... pehli baar thoda time lagega"):
                 urllib.request.urlretrieve(HF_URL, "best.pt")
 
+        # PIL only mode - cv2/libGL nahi chahiye
+        import os
+        os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "0"
         model = YOLO("best.pt")
         return model, True
     except Exception as e:
@@ -527,8 +529,9 @@ with col_right:
             # Get result
             result = results[0]
             boxes = result.boxes
-            annotated = result.plot()
-            annotated_pil = Image.fromarray(annotated)
+            # PIL se annotate karo — cv2/libGL ki zaroorat nahi
+            annotated = result.plot(img=img_array)
+            annotated_pil = Image.fromarray(annotated[:, :, ::-1])
 
             # Show annotated image
             st.image(annotated_pil, caption="🔬 Detection Result", use_container_width=True)
