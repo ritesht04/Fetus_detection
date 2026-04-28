@@ -21,7 +21,7 @@ def load_model():
         from ultralytics import YOLO
 
         # Hugging Face se direct best.pt download
-        HF_URL = "https://huggingface.co/ritesht04/Fetus_Detection/resolve/a6282a5fe675300a50c53629738a9583888634c9/best.pt"
+        HF_URL = "https://huggingface.co/ritesht04/Fetus_Detection/resolve/main/best.pt"
 
         # Agar best.pt nahi hai to download karo
         if not os.path.exists("best.pt"):
