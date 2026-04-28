@@ -373,7 +373,7 @@ h1,h2,h3,h4 { font-family: 'Playfair Display', serif !important; }
 st.markdown("""
 <div class="hero-wrap">
     <div class="hero-badge">🩺 &nbsp; AI-Powered Medical Imaging</div>
-    <h1 class="hero-title">FetusVision AI</h1>
+    <h1 class="hero-title">FetusDetection AI</h1>
     <p class="hero-sub">Ultrasound Image Mein Fetus Detection — YOLOv8 Deep Learning Model</p>
     <div class="hero-author">
         <span>⭐</span>
