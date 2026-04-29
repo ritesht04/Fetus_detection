@@ -8,13 +8,13 @@ import urllib.request
 
 # ─── PAGE CONFIG ─────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="FetusVision AI — Ritesh Trivedi",
+    page_title="FetusDetection AI — Ritesh Trivedi",
     page_icon="🩺",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# ─── LOAD MODEL (Hugging Face se — PIL only, no cv2/libGL) ───────────────────
+# ─── LOAD MODEL (Hugging Face — PIL only, no cv2/libGL) ───────────────────
 @st.cache_resource
 def load_model():
     try:
@@ -33,7 +33,7 @@ def load_model():
     except Exception as e:
         return None, str(e)
 
-# ─── DRAW BOXES WITH PIL (cv2/libGL nahi chahiye) ────────────────────────────
+# ─── DRAW BOXES WITH PIL (no cv2/libGL required) ────────────────────────────
 def draw_boxes_pil(image, boxes, names):
     img = image.copy().convert("RGB")
     draw = ImageDraw.Draw(img)
@@ -176,8 +176,8 @@ h1,h2,h3 { font-family:'Playfair Display',serif !important; }
 st.markdown("""
 <div class="hero-wrap">
     <div class="hero-badge">🩺 &nbsp; AI-Powered Medical Imaging</div>
-    <h1 class="hero-title">FetusVision AI</h1>
-    <p class="hero-sub">Ultrasound Image Mein Fetus Detection — YOLOv8 Deep Learning</p>
+    <h1 class="hero-title">FetusDetection AI</h1>
+    <p class="hero-sub">Fetus Detection in Ultrasound Images — YOLOv8 Deep Learning</p>
     <div class="hero-author">⭐ &nbsp; Developed by <strong>&nbsp;Ritesh Trivedi</strong></div>
 </div>
 <div class="divider"></div>
@@ -199,25 +199,25 @@ if not st.session_state.model_ready:
     st.markdown("""
     <div class="card" style="text-align:center; padding:2.5rem;">
         <div style="font-size:3rem; margin-bottom:1rem;">🧠</div>
-        <div class="card-title" style="font-size:1.3rem;">Model Load Karo</div>
+        <div class="card-title" style="font-size:1.3rem;">Load Model</div>
         <div style="color:var(--text-muted); font-size:0.88rem; margin-bottom:1.5rem;">
-            Hugging Face se YOLOv8 model download hoga — pehli baar 1-2 min lagenge
+            YOLOv8 model will be downloaded from Hugging Face — first time may take 1-2 minutes
         </div>
     </div>
     """, unsafe_allow_html=True)
 
     col_btn = st.columns([1, 2, 1])[1]
     with col_btn:
-        if st.button("⬇️ Model Load Karo — Click Here", use_container_width=True):
-            with st.spinner("🔄 Hugging Face se model download ho raha hai..."):
+        if st.button("⬇️ Load Model — Click Here", use_container_width=True):
+            with st.spinner("Downloading model from Hugging Face..."):
                 model, status = load_model()
             if status is True:
                 st.session_state.model_ready = True
                 st.session_state.model_obj = model
-                st.success("✅ Model successfully load ho gaya! Ab image upload karo.")
+                st.success("Model loaded successfully! Please upload your image.")
                 st.rerun()
             else:
-                st.error(f"❌ Error: {status}")
+                st.error(f"Error: {status}")
     st.stop()
 
 # ─── MAIN APP (Model loaded) ──────────────────────────────────────────────────
@@ -230,7 +230,7 @@ with col_left:
     <div class="card">
         <div class="section-label">🔬 &nbsp; Image Upload</div>
         <div style="font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; margin-bottom:0.4rem;">
-            Ultrasound Image Select Karo
+            Select Ultrasound Image
         </div>
         <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;">
             JPG, JPEG, PNG — 2D B-mode Ultrasound
@@ -239,7 +239,7 @@ with col_left:
     """, unsafe_allow_html=True)
 
     uploaded_file = st.file_uploader(
-        "Image upload karo",
+        "Upload image",
         type=["jpg", "jpeg", "png"],
         label_visibility="collapsed"
     )
@@ -251,18 +251,18 @@ with col_left:
     """, unsafe_allow_html=True)
 
     conf_threshold = st.slider("Confidence Threshold", 0.10, 0.90, 0.25, 0.05,
-        help="Zyada = sirf high confidence detections")
+        help="Higher = only high confidence detections shown")
     iou_threshold  = st.slider("IoU (NMS) Threshold", 0.20, 0.80, 0.45, 0.05,
         help="Duplicate box removal")
 
     st.markdown("""
     <div class="card" style="margin-top:0.5rem;">
         <div class="section-label">💡 &nbsp; Tips</div>
-        <div class="tip"><span class="ti">›</span><span>2D B-mode standard ultrasound use karo</span></div>
-        <div class="tip"><span class="ti">›</span><span>11+ weeks pregnancy pe best accuracy</span></div>
-        <div class="tip"><span class="ti">›</span><span>Early pregnancy mein conf 0.15 try karo</span></div>
-        <div class="tip"><span class="ti">›</span><span>Clear scan image better results deta hai</span></div>
-        <div class="tip"><span class="ti">›</span><span>Diagnosis doctor se confirm karein</span></div>
+        <div class="tip"><span class="ti">›</span><span>Use standard 2D B-mode ultrasound images</span></div>
+        <div class="tip"><span class="ti">›</span><span>Best accuracy at 11+ weeks of pregnancy</span></div>
+        <div class="tip"><span class="ti">›</span><span>For early pregnancy, try confidence threshold 0.15</span></div>
+        <div class="tip"><span class="ti">›</span><span>Clear scan images produce better results</span></div>
+        <div class="tip"><span class="ti">›</span><span>Always confirm diagnosis with a doctor</span></div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -273,10 +273,10 @@ with col_right:
              align-items:center; justify-content:center; text-align:center; gap:1rem;">
             <div style="font-size:4rem; opacity:0.25;">🩺</div>
             <div style="font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--text-muted);">
-                Image Upload Karo
+                Upload an Image
             </div>
             <div style="font-size:0.82rem; color:var(--text-muted); max-width:220px; line-height:1.6;">
-                Left side se image select karo — AI automatically detect karega
+                Select an image from the left panel — AI will detect automatically
             </div>
             <div style="padding:0.4rem 1rem; border-radius:50px; border:1px solid var(--border);
                  font-size:0.72rem; color:var(--success); letter-spacing:1px;">
@@ -341,8 +341,8 @@ with col_right:
                 <div style="margin-top:1rem; padding:0.8rem; background:rgba(0,229,160,0.06);
                      border:1px solid rgba(0,229,160,0.15); border-radius:10px;
                      font-size:0.78rem; color:#5EEAD4; line-height:1.6;">
-                    ⚕️ <strong>Disclaimer:</strong> Yeh AI tool sirf assistance ke liye hai.
-                    Final diagnosis doctor karega.
+                    ⚕️ <strong>Disclaimer:</strong> This AI tool is for assistance purposes only.
+                    Final diagnosis must be confirmed by a qualified doctor.
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -363,15 +363,15 @@ with col_right:
                     <span style="font-size:1.3rem;">❌</span>
                     <span class="card-title" style="margin:0;">No Detection</span>
                 </div>
-                <div class="badge-no">🔴 &nbsp; Fetus Detect Nahi Hua</div>
+                <div class="badge-no">🔴 &nbsp; No Fetus Detected</div>
                 <div style="margin-top:1rem; padding:0.9rem; background:rgba(255,69,103,0.06);
                      border:1px solid rgba(255,69,103,0.2); border-radius:10px;
                      font-size:0.81rem; color:#FDA4AF; line-height:1.7;">
                     <strong>Possible Reasons:</strong><br>
-                    • Early pregnancy (4–7 weeks) — fetus visible nahi<br>
-                    • Image quality poor hai<br>
-                    • Confidence threshold kam karo (0.15 try karo)<br>
-                    • 2D B-mode image chahiye — 3D/Doppler nahi
+                    • Early pregnancy (4–7 weeks) — fetus may not be visible yet<br>
+                    • Poor image quality<br>
+                    • Try lowering confidence threshold (try 0.15)<br>
+                    • Use 2D B-mode images only — not 3D/Doppler
                 </div>
                 <div class="stat-row" style="margin-top:1rem;">
                     <span class="sk">Image Size</span><span class="sv">{img_w} × {img_h} px</span>
@@ -386,7 +386,7 @@ with col_right:
         buf = io.BytesIO()
         annotated_img.save(buf, format="PNG")
         st.download_button(
-            "⬇️ Result Download Karo",
+            "⬇️ Download Result",
             data=buf.getvalue(),
             file_name="fetus_result.png",
             mime="image/png",
